@@ -17,12 +17,13 @@ namespace API.Controllers
     public class UsersController : BaseApiController
     {
         private readonly IUserRepository _userRepository;
-        private readonly IMapper __mapper;
+        private readonly IMapper _mapper;
 
-        public UsersController(IUserRepository userRepository, IMapper _mapper)
+        public UsersController(IUserRepository userRepository, IMapper mapper)
         {
-            __mapper = _mapper;
+            _mapper = mapper;
             _userRepository = userRepository;
+
         }
         //api/users/3
 
@@ -30,13 +31,15 @@ namespace API.Controllers
         public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
         {
             var users = await _userRepository.GetMembersAsync();
-            return Ok(users);
+            var usersToReturn = _mapper.Map<IEnumerable<MemberDto>>(users);
+            return Ok(usersToReturn);
         }
 
         [HttpGet("{username}")]
         public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
-            return await _userRepository.GetMemberAsync(username);
+            var user = await _userRepository.GetUserByUsernameAsync(username);
+            return _mapper.Map<MemberDto>(user);
         }
 
     }
